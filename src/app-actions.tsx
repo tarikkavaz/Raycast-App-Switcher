@@ -1,4 +1,12 @@
-import { Action, ActionPanel, Icon, closeMainWindow, popToRoot, showToast, Toast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  closeMainWindow,
+  popToRoot,
+  showToast,
+  Toast,
+} from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
 import { AppGridItem } from "./types";
 import { addExcludedApp } from "./excluded-apps";
@@ -137,7 +145,9 @@ export function AppActions({ item, revalidate }: AppActionsProps) {
               title="Restore Window"
               icon={Icon.Maximize}
               shortcut={{ modifiers: ["ctrl"], key: "m" }}
-              onAction={() => handleAction(switchToWindow, "Window restored", true)}
+              onAction={() =>
+                handleAction(switchToWindow, "Window restored", true)
+              }
             />
           ) : (
             <Action
@@ -167,7 +177,10 @@ export function AppActions({ item, revalidate }: AppActionsProps) {
         shortcut={{ modifiers: ["ctrl"], key: "e" }}
         onAction={async () => {
           await addExcludedApp(item.bundleId);
-          await showToast({ style: Toast.Style.Success, title: `${item.appName} excluded` });
+          await showToast({
+            style: Toast.Style.Success,
+            title: `${item.appName} excluded`,
+          });
           revalidate();
         }}
       />

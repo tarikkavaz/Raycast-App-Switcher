@@ -1,10 +1,22 @@
-import { Action, ActionPanel, Icon, List, getApplications, showToast, Toast } from "@raycast/api";
+import {
+  Action,
+  ActionPanel,
+  Icon,
+  List,
+  getApplications,
+  showToast,
+  Toast,
+} from "@raycast/api";
 import { usePromise } from "@raycast/utils";
 import { useMemo } from "react";
 import { getExcludedApps, removeExcludedApp } from "./excluded-apps";
 
 export default function ManageExcluded() {
-  const { data: excluded, isLoading: excludeLoading, revalidate } = usePromise(getExcludedApps);
+  const {
+    data: excluded,
+    isLoading: excludeLoading,
+    revalidate,
+  } = usePromise(getExcludedApps);
   const { data: apps, isLoading: appsLoading } = usePromise(getApplications);
 
   const excludedApps = useMemo(() => {
@@ -40,7 +52,10 @@ export default function ManageExcluded() {
                   icon={Icon.Undo}
                   onAction={async () => {
                     await removeExcludedApp(bundleId);
-                    await showToast({ style: Toast.Style.Success, title: "App restored" });
+                    await showToast({
+                      style: Toast.Style.Success,
+                      title: "App restored",
+                    });
                     revalidate();
                   }}
                 />
