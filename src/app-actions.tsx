@@ -26,7 +26,20 @@ async function switchToWindow(item: AppGridItem) {
       tell application "${name}" to activate
     `);
   } else {
-    await runAppleScript(`tell application "${name}" to activate`);
+    await runAppleScript(`
+      tell application "${name}"
+        activate
+        reopen
+      end tell
+      delay 0.1
+      tell application "System Events"
+        tell process "${name}"
+          if (count of windows) is 0 then
+            keystroke "n" using command down
+          end if
+        end tell
+      end tell
+    `);
   }
 }
 
