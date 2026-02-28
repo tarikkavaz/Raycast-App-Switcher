@@ -9,17 +9,17 @@ import {
 } from "./get-running-apps";
 import { getExcludedApps } from "./excluded-apps";
 import { AppActions } from "./app-actions";
-import { AppGridItem, Preferences, RunningApp } from "./types";
+import { AppGridItem, RunningApp } from "./types";
 
 function normalizeOrderPreference(
   value: string | undefined,
-): Preferences["appOrder"] {
+): Preferences.Index["appOrder"] {
   return value === "alphabetical" ? "alphabetical" : "most-recent";
 }
 
 function normalizeIconSizePreference(
   value: string | undefined,
-): Preferences["iconSize"] {
+): Preferences.Index["iconSize"] {
   if (value === "small" || value === "medium" || value === "large")
     return value;
   return "medium";
@@ -27,24 +27,24 @@ function normalizeIconSizePreference(
 
 function normalizeViewModePreference(
   value: string | undefined,
-): Preferences["viewMode"] {
+): Preferences.Index["viewMode"] {
   return value === "list" ? "list" : "grid";
 }
 
-function toGridItemSize(iconSize: Preferences["iconSize"]): Grid.ItemSize {
+function toGridItemSize(iconSize: Preferences.Index["iconSize"]): Grid.ItemSize {
   if (iconSize === "small") return Grid.ItemSize.Small;
   if (iconSize === "large") return Grid.ItemSize.Large;
   return Grid.ItemSize.Medium;
 }
 
-function toGridColumns(iconSize: Preferences["iconSize"]): number {
+function toGridColumns(iconSize: Preferences.Index["iconSize"]): number {
   if (iconSize === "small") return 12;
   if (iconSize === "large") return 5;
   return 7;
 }
 
 export default function AppSwitcher() {
-  const preferences = getPreferenceValues<Preferences>();
+  const preferences = getPreferenceValues<Preferences.Index>();
   const appOrder = normalizeOrderPreference(
     (preferences as { appOrder?: string }).appOrder,
   );
