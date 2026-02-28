@@ -1,3 +1,4 @@
+import { LocalStorage } from "@raycast/api";
 import { runAppleScript } from "@raycast/utils";
 import { RunningApp } from "./types";
 
@@ -69,6 +70,14 @@ const MINIMIZED_SCRIPT = `(() => {
   return JSON.stringify(result);
 })()`;
 
+const RUNNING_APPS_CACHE_KEY = "runningAppsCache";
+const RUNNING_APPS_CACHE_TTL_MS = 20_000;
+
+interface RunningAppsCacheEntry {
+  timestamp: number;
+  apps: RunningApp[];
+}
+
 export async function getRunningApps(): Promise<RunningApp[]> {
   const result = await runAppleScript(FAST_SCRIPT, { language: "JavaScript" });
   try {
@@ -78,8 +87,38 @@ export async function getRunningApps(): Promise<RunningApp[]> {
   }
 }
 
+export async function getCachedRunningApps(): Promise<RunningApp[] | null> {
+  const stored = await LocalStorage.getItem<string>(RUNNING_APPS_CACHE_KEY);
+  if (!stored) return null;
+  try {
+    const parsed = JSON.parse(stored) as RunningAppsCacheEntry;
+    if (
+      !parsed ||
+      typeof parsed.timestamp !== "number" ||
+      !Array.isArray(parsed.apps)
+    ) {
+      return null;
+    }
+    const isExpired = Date.now() - parsed.timestamp > RUNNING_APPS_CACHE_TTL_MS;
+    if (isExpired) return null;
+    return parsed.apps;
+  } catch {
+    return null;
+  }
+}
+
+export async function setCachedRunningApps(apps: RunningApp[]): Promise<void> {
+  const payload: RunningAppsCacheEntry = {
+    timestamp: Date.now(),
+    apps,
+  };
+  await LocalStorage.setItem(RUNNING_APPS_CACHE_KEY, JSON.stringify(payload));
+}
+
 export async function getMinimizedStatus(): Promise<Record<string, boolean[]>> {
-  const result = await runAppleScript(MINIMIZED_SCRIPT, { language: "JavaScript" });
+  const result = await runAppleScript(MINIMIZED_SCRIPT, {
+    language: "JavaScript",
+  });
   try {
     return JSON.parse(result);
   } catch {

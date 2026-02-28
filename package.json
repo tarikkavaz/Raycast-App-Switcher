@@ -26,7 +26,6 @@
           "type": "dropdown",
           "title": "App Ordering",
           "description": "How to order apps in the switcher",
-          "required": true,
           "default": "most-recent",
           "data": [
             {
@@ -44,8 +43,7 @@
           "type": "dropdown",
           "title": "Icon Size",
           "description": "Set app icon size in the grid",
-          "required": true,
-          "default": "small",
+          "default": "medium",
           "data": [
             {
               "title": "Small",
@@ -58,6 +56,23 @@
             {
               "title": "Large",
               "value": "large"
+            }
+          ]
+        },
+        {
+          "name": "viewMode",
+          "type": "dropdown",
+          "title": "View Mode",
+          "description": "Show apps in grid or list view",
+          "default": "grid",
+          "data": [
+            {
+              "title": "Grid",
+              "value": "grid"
+            },
+            {
+              "title": "List",
+              "value": "list"
             }
           ]
         }

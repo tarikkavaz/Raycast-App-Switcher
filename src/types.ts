@@ -27,4 +27,5 @@ export interface AppGridItem {
 export interface Preferences {
   appOrder: "most-recent" | "alphabetical";
   iconSize: "small" | "medium" | "large";
+  viewMode: "grid" | "list";
 }
