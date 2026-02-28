@@ -4,6 +4,10 @@
   "title": "App Switcher",
   "description": "A visual app switcher showing all open apps with their windows in a grid layout",
   "icon": "extension-icon.png",
+  "screenshots": [
+    "metadata/app-switcher-1.png",
+    "metadata/app-switcher-2.png"
+  ],
   "author": "tarikkavaz",
   "categories": [
     "Applications",
