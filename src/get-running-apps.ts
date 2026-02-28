@@ -71,11 +71,24 @@ const MINIMIZED_SCRIPT = `(() => {
 })()`;
 
 const RUNNING_APPS_CACHE_KEY = "runningAppsCache";
-const RUNNING_APPS_CACHE_TTL_MS = 20_000;
+let inMemoryRunningAppsCache: RunningApp[] | null = null;
 
 interface RunningAppsCacheEntry {
   timestamp: number;
   apps: RunningApp[];
+}
+
+function isRunningAppsCacheEntry(
+  value: unknown,
+): value is RunningAppsCacheEntry {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "timestamp" in value &&
+    "apps" in value &&
+    typeof (value as { timestamp: unknown }).timestamp === "number" &&
+    Array.isArray((value as { apps: unknown }).apps)
+  );
 }
 
 export async function getRunningApps(): Promise<RunningApp[]> {
@@ -88,26 +101,33 @@ export async function getRunningApps(): Promise<RunningApp[]> {
 }
 
 export async function getCachedRunningApps(): Promise<RunningApp[] | null> {
+  if (inMemoryRunningAppsCache) return inMemoryRunningAppsCache;
+
   const stored = await LocalStorage.getItem<string>(RUNNING_APPS_CACHE_KEY);
   if (!stored) return null;
+
   try {
-    const parsed = JSON.parse(stored) as RunningAppsCacheEntry;
-    if (
-      !parsed ||
-      typeof parsed.timestamp !== "number" ||
-      !Array.isArray(parsed.apps)
-    ) {
-      return null;
+    const parsed = JSON.parse(stored) as unknown;
+
+    // Backward compatibility with older cache format (raw array).
+    if (Array.isArray(parsed)) {
+      inMemoryRunningAppsCache = parsed as RunningApp[];
+      return inMemoryRunningAppsCache;
     }
-    const isExpired = Date.now() - parsed.timestamp > RUNNING_APPS_CACHE_TTL_MS;
-    if (isExpired) return null;
-    return parsed.apps;
+
+    if (isRunningAppsCacheEntry(parsed)) {
+      inMemoryRunningAppsCache = parsed.apps;
+      return inMemoryRunningAppsCache;
+    }
+
+    return null;
   } catch {
     return null;
   }
 }
 
 export async function setCachedRunningApps(apps: RunningApp[]): Promise<void> {
+  inMemoryRunningAppsCache = apps;
   const payload: RunningAppsCacheEntry = {
     timestamp: Date.now(),
     apps,
